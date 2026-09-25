@@ -20,7 +20,7 @@ from ctypes import wintypes
 import webview
 from webview.dom import DOMEventHandler
 
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 SITE = "https://tsoolgee.uk"
 REPO = "tsoolgee/nokia-video-converter"
 DOWNLOAD_URL = f"https://github.com/{REPO}/releases/latest/download/NokiaConverter.exe"
@@ -48,7 +48,7 @@ ENCODE_ARGS = [
 
 SETTINGS_DIR = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "NokiaConverter")
 SETTINGS_FILE = os.path.join(SETTINGS_DIR, "settings.json")
-DEFAULTS = {"theme": "auto", "mode": "copy"}  # mode: copy = תיקייה חדשה, replace = החלפת המקור
+DEFAULTS = {"theme": "dark", "mode": "copy"}  # mode: copy = תיקייה חדשה, replace = החלפת המקור
 
 
 def resource(name):
@@ -74,7 +74,10 @@ def load_settings():
     try:
         with open(SETTINGS_FILE, encoding="utf-8") as f:
             s = json.load(f)
-        return {k: s.get(k, v) for k, v in DEFAULTS.items()}
+        s = {k: s.get(k, v) for k, v in DEFAULTS.items()}
+        if s["theme"] not in ("dark", "light"):
+            s["theme"] = "dark"
+        return s
     except (OSError, ValueError):
         return dict(DEFAULTS)
 
@@ -404,7 +407,7 @@ def main():
     s = api._settings
     html = (html.replace("{{LOGO}}", logo).replace("{{VERSION}}", VERSION)
             .replace("{{THEME}}", s["theme"]).replace("{{SETTINGS}}", json.dumps(s)))
-    dark = api._settings["theme"] == "dark"
+    dark = api._settings["theme"] != "light"
     window = webview.create_window(
         "ממיר סרטונים לנוקיה", html=html, js_api=api, width=780, height=700, min_size=(580, 580),
         background_color="#0f1420" if dark else "#eef2f8")
