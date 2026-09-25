@@ -24,6 +24,7 @@ EXCLUDE = ["PyQt5", "PyQt6", "PySide2", "PySide6", "qtpy", "gi", "cefpython3", "
 cmd = [sys.executable, "-m", "PyInstaller", "--noconfirm", "--onefile", "--windowed",
        "--name", "NokiaConverter", "--icon", os.path.join(HERE, "icon.ico"),
        "--add-data", os.path.join(HERE, "ui.html") + ";.",
+       "--add-data", os.path.join(HERE, "logo.png") + ";.",
        "--add-binary", ff + ";.",
        "--distpath", "dist", "--workpath", "build", "--specpath", "build"]
 for m in EXCLUDE:

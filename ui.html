@@ -1,40 +1,54 @@
 <!doctype html>
-<html lang="he" dir="rtl">
+<html lang="he" dir="rtl" data-theme="{{THEME}}">
 <head>
 <meta charset="utf-8">
-<title>ממיר לנוקיה</title>
+<title>ממיר סרטונים לנוקיה</title>
 <style>
 :root{
   --bg:#eef2f8; --card:#ffffff; --ink:#152033; --muted:#64728a; --line:#dbe2ee;
-  --accent:#1f5fe0; --accent2:#5b8cff; --accent-ink:#fff; --soft:#e8efff;
-  --ok:#15a36a; --ok-soft:#e3f6ee; --bad:#d6453d; --bad-soft:#fdeceb; --skip:#8a95a8;
+  --accent:#1a7fc4; --accent2:#3fa9e6; --accent-ink:#fff; --soft:#e6f2fb;
+  --ok:#15a36a; --ok-soft:#e3f6ee; --bad:#d6453d; --bad-soft:#fdeceb; --warn:#b76e00; --warn-soft:#fff4e0;
+  --skip:#8a95a8; --overlay:rgba(15,25,45,.35);
   --shadow:0 10px 30px rgba(20,40,90,.10), 0 2px 6px rgba(20,40,90,.06);
 }
+:root[data-theme="dark"]{
+  --bg:#0f1420; --card:#171e2d; --ink:#e8edf6; --muted:#8e9ab0; --line:#28324a;
+  --accent:#3aa0e8; --accent2:#6cc0f5; --soft:#16283c;
+  --ok:#34c98b; --ok-soft:#153327; --bad:#ff6b63; --bad-soft:#3a1d1c; --warn:#ffb547; --warn-soft:#3a2c14;
+  --skip:#6f7a90; --overlay:rgba(0,0,0,.55);
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
 @media (prefers-color-scheme: dark){
-  :root{
+  :root[data-theme="auto"]{
     --bg:#0f1420; --card:#171e2d; --ink:#e8edf6; --muted:#8e9ab0; --line:#28324a;
-    --accent:#4d82ff; --accent2:#7ea4ff; --soft:#1c2740;
-    --ok:#34c98b; --ok-soft:#153327; --bad:#ff6b63; --bad-soft:#3a1d1c; --skip:#6f7a90;
+    --accent:#3aa0e8; --accent2:#6cc0f5; --soft:#16283c;
+    --ok:#34c98b; --ok-soft:#153327; --bad:#ff6b63; --bad-soft:#3a1d1c; --warn:#ffb547; --warn-soft:#3a2c14;
+    --skip:#6f7a90; --overlay:rgba(0,0,0,.55);
     --shadow:0 10px 30px rgba(0,0,0,.35);
   }
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
-  font-family:"Segoe UI","Segoe UI Variable",Arial,sans-serif;font-size:15px;user-select:none;overflow:hidden}
-.app{height:100%;display:flex;flex-direction:column;padding:22px 24px 20px;gap:16px}
+  font-family:"Segoe UI","Segoe UI Variable",Arial,sans-serif;font-size:15px;user-select:none;overflow:hidden;
+  transition:background .2s,color .2s}
+.app{height:100%;display:flex;flex-direction:column;padding:20px 24px 12px;gap:14px}
 
 header{display:flex;align-items:center;gap:14px}
-.logo{width:46px;height:46px;border-radius:14px;flex:none;display:grid;place-items:center;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 6px 16px rgba(31,95,224,.35)}
-.logo svg{width:24px;height:24px}
-h1{margin:0;font-size:21px;font-weight:700;letter-spacing:.2px}
+.logo{width:52px;height:52px;flex:none;border-radius:14px;background:#fff;display:grid;place-items:center;
+  box-shadow:var(--shadow)}
+.logo img{width:44px;height:44px}
+.htext{flex:1;min-width:0}
+h1{margin:0;font-size:21px;font-weight:700}
 .sub{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.iconbtn{width:40px;height:40px;border-radius:12px;background:var(--card);color:var(--muted);
+  box-shadow:var(--shadow);padding:0;justify-content:center}
+.iconbtn:hover{color:var(--accent)}
+.iconbtn svg{width:20px;height:20px}
 
 .card{background:var(--card);border-radius:18px;box-shadow:var(--shadow)}
 
-/* אזור גרירה */
 #drop{flex:1;min-height:0;border:2px dashed var(--line);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;
+  align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;
   transition:border-color .15s, background .15s, transform .15s}
 #drop.over{border-color:var(--accent);background:var(--soft);transform:scale(1.01)}
 .bigicon{width:78px;height:78px;border-radius:24px;background:var(--soft);display:grid;place-items:center}
@@ -45,29 +59,48 @@ h1{margin:0;font-size:21px;font-weight:700;letter-spacing:.2px}
 .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
 .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 button{font:inherit;border:0;border-radius:12px;padding:10px 20px;cursor:pointer;font-weight:600;
-  display:inline-flex;align-items:center;gap:8px;transition:filter .12s, transform .08s, background .12s}
+  display:inline-flex;align-items:center;gap:8px;transition:filter .12s, transform .08s, background .12s, color .12s}
 button:active{transform:translateY(1px)}
+button:disabled{opacity:.6;cursor:default}
 button svg{width:18px;height:18px}
-.primary{background:var(--accent);color:var(--accent-ink);box-shadow:0 4px 12px rgba(31,95,224,.3)}
+.primary{background:var(--accent);color:var(--accent-ink);box-shadow:0 4px 12px rgba(26,127,196,.3)}
 .primary:hover{filter:brightness(1.08)}
 .ghost{background:var(--soft);color:var(--accent)}
 .ghost:hover{filter:brightness(.97)}
 .danger{background:var(--bad-soft);color:var(--bad)}
 .fmt{font-size:12.5px;color:var(--muted);margin-top:4px}
+.modebadge{display:none;font-size:13px;font-weight:600;color:var(--warn);background:var(--warn-soft);
+  padding:7px 12px;border-radius:10px}
+body.replace .modebadge{display:inline-block}
+body.replace .fmt-copy{display:none}
+.fmt-replace{display:none} body.replace .fmt-replace{display:block}
+
+/* סריקה */
+#scan{flex:1;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:var(--muted)}
+.spin{width:16px;height:16px;border:2.5px solid var(--line);border-top-color:var(--accent);border-radius:50%;
+  animation:sp .8s linear infinite;flex:none}
+.spin.big{width:40px;height:40px;border-width:4px}
+@keyframes sp{to{transform:rotate(360deg)}}
 
 /* עבודה */
 #work{flex:1;min-height:0;display:none;flex-direction:column;overflow:hidden}
-.top{padding:18px 20px 14px;border-bottom:1px solid var(--line)}
+.top{padding:18px 20px 16px;border-bottom:1px solid var(--line)}
 .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
 #title{font-size:17px;font-weight:700}
 #counts{color:var(--muted);font-size:13.5px;margin-top:3px}
-.bar{height:10px;background:var(--soft);border-radius:99px;overflow:hidden;margin-top:14px}
+.now{margin-top:14px;display:flex;align-items:center;gap:14px}
+.now .lbl{font-size:12.5px;color:var(--muted)}
+#curname{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.now .txt{flex:1;min-width:0}
+#pct{font-size:30px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;min-width:86px;text-align:left;direction:ltr}
+.bar{height:12px;background:var(--soft);border-radius:99px;overflow:hidden;margin-top:12px}
 .bar>i{display:block;height:100%;width:0;border-radius:99px;
-  background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .25s}
+  background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .3s}
+#work.finished .now{display:none}
 #list{flex:1;overflow:auto;padding:8px 10px 10px}
 .item{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:12px}
 .item.active{background:var(--soft)}
-.st{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;
+.st{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;
   background:var(--soft);color:var(--muted)}
 .st svg{width:16px;height:16px}
 .item.done .st{background:var(--ok-soft);color:var(--ok)}
@@ -75,15 +108,13 @@ button svg{width:18px;height:18px}
 .item.skip .st{color:var(--skip)}
 .meta{flex:1;min-width:0}
 .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;font-size:14px}
-.path{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:12px;direction:rtl}
+.path{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:12px}
 .mini{height:4px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:6px;display:none}
 .item.active .mini{display:block}
 .mini>i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
 .tag{font-size:12.5px;color:var(--muted);flex:none;min-width:56px;text-align:left}
+.item.active .tag{color:var(--accent);font-weight:700}
 .item.done .tag{color:var(--ok)} .item.fail .tag{color:var(--bad)}
-.spin{width:16px;height:16px;border:2.5px solid var(--line);border-top-color:var(--accent);border-radius:50%;
-  animation:sp .8s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
 .foot{padding:14px 20px;border-top:1px solid var(--line);display:none;gap:10px;flex-wrap:wrap}
 #work.finished .foot{display:flex}
 #work.finished #cancel{display:none}
@@ -92,9 +123,40 @@ button svg{width:18px;height:18px}
 .banner.good{background:var(--ok-soft);color:var(--ok)}
 .banner.warn{background:var(--bad-soft);color:var(--bad)}
 
+.credit{text-align:center;font-size:12.5px;color:var(--muted)}
+.credit a{color:var(--accent);text-decoration:none;font-weight:600;cursor:pointer}
+.credit a:hover{text-decoration:underline}
+
+/* הגדרות */
+#modal{position:fixed;inset:0;background:var(--overlay);display:none;align-items:center;justify-content:center;padding:20px;z-index:5}
+#modal.open{display:flex}
+.sheet{width:min(520px,100%);max-height:100%;overflow:auto;padding:22px}
+.sheet h3{margin:0 0 4px;font-size:18px}
+.sec{margin-top:18px}
+.sec .h{font-weight:700;font-size:14px;margin-bottom:8px}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;justify-content:center;background:transparent;color:var(--muted);padding:8px 10px;font-weight:600}
+.seg button.on{background:var(--card);color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.opt{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--line);border-radius:14px;padding:12px 14px;
+  cursor:pointer;margin-bottom:8px;transition:border-color .12s, background .12s}
+.opt.on{border-color:var(--accent);background:var(--soft)}
+.opt .dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--muted);flex:none;margin-top:2px;display:grid;place-items:center}
+.opt.on .dot{border-color:var(--accent)}
+.opt.on .dot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.opt b{display:block;font-size:14.5px}
+.opt span{display:block;font-size:13px;color:var(--muted);margin-top:3px;line-height:1.5}
+.opt.danger-opt span.w{color:var(--warn)}
+.sheet .foot2{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px}
+.ver{font-size:12px;color:var(--muted)}
+
+#confirm{position:fixed;inset:0;background:var(--overlay);display:none;align-items:center;justify-content:center;padding:20px;z-index:6}
+#confirm.open{display:flex}
+#confirm .sheet{width:min(430px,100%)}
+#confirm p{color:var(--muted);line-height:1.6;margin:8px 0 0}
+
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
   background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;font-size:14px;
-  transition:.2s;pointer-events:none}
+  transition:.2s;pointer-events:none;z-index:9}
 #toast.show{opacity:1;transform:translateX(-50%)}
 ::-webkit-scrollbar{width:10px} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px;border:3px solid var(--card)}
 </style>
@@ -102,11 +164,12 @@ button svg{width:18px;height:18px}
 <body>
 <div class="app">
   <header>
-    <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><rect x="8.5" y="5" width="7" height="6" rx="1" fill="#fff" stroke="none"/><path d="M9 15h.01M12 15h.01M15 15h.01M9 18h.01M12 18h.01M15 18h.01"/></svg></div>
-    <div>
-      <h1>ממיר לנוקיה</h1>
+    <div class="logo"><img src="{{LOGO}}" alt=""></div>
+    <div class="htext">
+      <h1>ממיר סרטונים לנוקיה</h1>
       <p class="sub">הופך כל סרטון לקובץ שהטלפון מנגן, באותו מבנה תיקיות</p>
     </div>
+    <button class="iconbtn" title="הגדרות" onclick="openSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
   </header>
 
   <section id="drop" class="card">
@@ -118,7 +181,13 @@ button svg{width:18px;height:18px}
       <button class="primary" onclick="pick('folder')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>בחר תיקייה</button>
       <button class="ghost" onclick="pick('files')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="m17 10 4-2v8l-4-2"/></svg>בחר סרטונים</button>
     </div>
-    <div class="fmt">הסרטונים החדשים נשמרים בתיקייה "‎<שם> - נוקיה‎" ליד המקור. המקור לא משתנה.</div>
+    <div class="fmt fmt-copy">הסרטונים החדשים נשמרים בתיקייה חדשה ליד המקור, עם הסיומת "- נוקיה". המקור לא משתנה.</div>
+    <div class="modebadge">מצב החלפה פעיל: כל סרטון יוחלף בגרסת הנוקיה, והמקור יועבר לסל המחזור</div>
+  </section>
+
+  <section id="scan" class="card">
+    <div class="spin big"></div>
+    <div>מחפש סרטונים…</div>
   </section>
 
   <section id="work" class="card">
@@ -130,6 +199,14 @@ button svg{width:18px;height:18px}
         </div>
         <button id="cancel" class="danger" onclick="cancelRun()">עצור</button>
       </div>
+      <div class="now">
+        <div class="spin"></div>
+        <div class="txt">
+          <div class="lbl">ממיר עכשיו</div>
+          <div id="curname">…</div>
+        </div>
+        <div id="pct">0%</div>
+      </div>
       <div class="bar"><i id="total"></i></div>
       <div id="banner" class="banner"></div>
     </div>
@@ -139,6 +216,51 @@ button svg{width:18px;height:18px}
       <button class="ghost" onclick="reset()">המרה חדשה</button>
     </div>
   </section>
+
+  <div class="credit">נוצר על ידי צול גאה · <a onclick="api().open_site()">TSOOLGEE.UK</a></div>
+</div>
+
+<div id="modal" onclick="if(event.target===this)closeSettings()">
+  <div class="sheet card">
+    <h3>הגדרות</h3>
+    <div class="sec">
+      <div class="h">ערכת נושא</div>
+      <div class="seg" id="themeSeg">
+        <button data-v="light">בהיר</button>
+        <button data-v="dark">כהה</button>
+        <button data-v="auto">לפי המחשב</button>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="h">איפה לשמור את הסרטונים המומרים</div>
+      <div class="opt" data-v="copy">
+        <div class="dot"></div>
+        <div><b>בתיקייה חדשה ליד המקור</b>
+          <span>נוצרת תיקייה בשם "&lrm;&lt;שם&gt; - נוקיה&lrm;" עם אותו מבנה תיקיות. המקור נשאר כמו שהוא.</span></div>
+      </div>
+      <div class="opt danger-opt" data-v="replace">
+        <div class="dot"></div>
+        <div><b>להחליף את הקבצים בתיקיית המקור</b>
+          <span>כל סרטון מוחלף בגרסת הנוקיה שלו, באותו מקום ובאותו שם (עם הסיומת MP4).</span>
+          <span class="w">הקבצים המקוריים עוברים לסל המחזור, ואפשר לשחזר אותם משם.</span></div>
+      </div>
+    </div>
+    <div class="foot2">
+      <span class="ver">גרסה {{VERSION}}</span>
+      <button class="primary" onclick="closeSettings()">סגור</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirm">
+  <div class="sheet card">
+    <h3>להחליף את קבצי המקור?</h3>
+    <p>במצב הזה כל סרטון מוחלף בגרסה המוקטנת לנוקיה. הקבצים המקוריים עוברים לסל המחזור, וכשהסל יתרוקן הם יימחקו לתמיד.</p>
+    <div class="foot2">
+      <button class="ghost" onclick="confirmReplace(false)">ביטול</button>
+      <button class="danger" onclick="confirmReplace(true)">כן, להחליף</button>
+    </div>
+  </div>
 </div>
 <div id="toast"></div>
 
@@ -149,27 +271,45 @@ const ICON = {
   fail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg>',
   skip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 7 5 5-5 5M13 7l5 5-5 5"/></svg>',
 };
-const TAG = {wait:'ממתין', done:'הושלם', fail:'נכשל', skip:'קיים כבר'};
+const TAG = {wait:'ממתין', done:'הושלם', fail:'נכשל', skip:'מוכן כבר'};
 const $ = s => document.querySelector(s);
 const api = () => window.pywebview.api;
-let busy = false;
+let busy = false, total = 0, settings = {{SETTINGS}};
 
 function toast(msg){
   const t = $('#toast'); t.textContent = msg; t.classList.add('show');
   clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 2600);
 }
+function show(id){
+  for (const s of ['drop','scan','work']) $('#' + s).style.display = s === id ? 'flex' : 'none';
+}
 
-async function pick(kind){
-  if (busy) return;
-  const r = await api().pick(kind);
-  if (r) toast(r);
+// --- הגדרות ---
+function applySettings(){
+  document.documentElement.dataset.theme = settings.theme;
+  document.body.classList.toggle('replace', settings.mode === 'replace');
+  document.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.theme));
+  document.querySelectorAll('.opt').forEach(o => o.classList.toggle('on', o.dataset.v === settings.mode));
 }
+function setSetting(k, v){ settings[k] = v; applySettings(); api().set_setting(k, v); }
+function openSettings(){ applySettings(); $('#modal').classList.add('open'); }
+function closeSettings(){ $('#modal').classList.remove('open'); }
+document.querySelectorAll('#themeSeg button').forEach(b => b.onclick = () => setSetting('theme', b.dataset.v));
+document.querySelectorAll('.opt').forEach(o => o.onclick = () => {
+  if (busy) { toast('אי אפשר לשנות בזמן המרה'); return; }
+  if (o.dataset.v === 'replace' && settings.mode !== 'replace') $('#confirm').classList.add('open');
+  else setSetting('mode', o.dataset.v);
+});
+function confirmReplace(yes){
+  $('#confirm').classList.remove('open');
+  if (yes) setSetting('mode', 'replace');
+}
+applySettings();
+
+// --- פעולות ---
+function pick(kind){ if (!busy) api().pick(kind); }
 function cancelRun(){ api().cancel(); $('#cancel').disabled = true; $('#cancel').textContent = 'עוצר…'; }
-function reset(){
-  busy = false;
-  $('#work').style.display = 'none'; $('#work').classList.remove('finished');
-  $('#drop').style.display = 'flex';
-}
+function reset(){ busy = false; $('#work').classList.remove('finished'); show('drop'); }
 
 // גרירה: הדפדפן לא יפתח את הקובץ; Python מקבל את הנתיבים המלאים
 ['dragenter','dragover'].forEach(ev => document.addEventListener(ev, e => {
@@ -180,16 +320,19 @@ function reset(){
   if (ev === 'drop' || !e.relatedTarget) $('#drop').classList.remove('over');
 }));
 
-// קריאות מ-Python
-window.onJobs = (jobs) => {
-  busy = true;
-  $('#drop').style.display = 'none';
-  const w = $('#work'); w.style.display = 'flex'; w.classList.remove('finished');
+// --- קריאות מ-Python ---
+window.onScanning = () => { busy = true; closeSettings(); show('scan'); };
+window.onNothing = (msg) => { busy = false; show('drop'); toast(msg); };
+window.onJobs = (jobs, mode) => {
+  busy = true; total = jobs.length;
+  show('work');
+  const w = $('#work'); w.classList.remove('finished');
   $('#cancel').disabled = false; $('#cancel').textContent = 'עצור';
-  $('#title').textContent = 'ממיר…';
-  $('#total').style.width = '0';
-  $('#counts').textContent = jobs.length + ' סרטונים';
+  $('#title').textContent = mode === 'replace' ? 'ממיר ומחליף את המקור…' : 'ממיר…';
+  $('#total').style.width = '0'; $('#pct').textContent = '0%';
+  $('#counts').textContent = total + ' סרטונים';
   const list = $('#list'); list.innerHTML = '';
+  const frag = document.createDocumentFragment();
   for (const j of jobs){
     const el = document.createElement('div');
     el.className = 'item'; el.id = 'j' + j.id;
@@ -198,8 +341,13 @@ window.onJobs = (jobs) => {
       <div class="tag">${TAG.wait}</div>`;
     el.querySelector('.name').textContent = j.name;
     el.querySelector('.path').textContent = j.rel;
-    list.appendChild(el);
+    frag.appendChild(el);
   }
+  list.appendChild(frag);
+};
+window.onCurrent = (i, name) => {
+  $('#curname').textContent = name;
+  $('#counts').textContent = `סרטון ${i + 1} מתוך ${total}`;
 };
 window.onItem = (id, state, pct) => {
   const el = document.getElementById('j' + id); if (!el) return;
@@ -217,10 +365,16 @@ window.onItem = (id, state, pct) => {
     el.querySelector('.tag').textContent = TAG[state];
   }
 };
-window.onTotal = (pct, text) => { $('#total').style.width = pct + '%'; $('#counts').textContent = text; };
-window.onDone = (title, banner, good) => {
+window.onTotal = (pct) => {
+  $('#total').style.width = pct + '%';
+  $('#pct').textContent = Math.floor(pct) + '%';
+};
+window.onDone = (title, banner, good, pct) => {
+  busy = false;
   $('#title').textContent = title;
+  $('#counts').textContent = total + ' סרטונים';
   const b = $('#banner'); b.textContent = banner; b.className = 'banner ' + (good ? 'good' : 'warn');
+  $('#total').style.width = pct + '%';
   $('#work').classList.add('finished');
 };
 window.onToast = toast;
