@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>ממיר לנוקיה</title>
+<style>
+:root{
+  --bg:#eef2f8; --card:#ffffff; --ink:#152033; --muted:#64728a; --line:#dbe2ee;
+  --accent:#1f5fe0; --accent2:#5b8cff; --accent-ink:#fff; --soft:#e8efff;
+  --ok:#15a36a; --ok-soft:#e3f6ee; --bad:#d6453d; --bad-soft:#fdeceb; --skip:#8a95a8;
+  --shadow:0 10px 30px rgba(20,40,90,.10), 0 2px 6px rgba(20,40,90,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1420; --card:#171e2d; --ink:#e8edf6; --muted:#8e9ab0; --line:#28324a;
+    --accent:#4d82ff; --accent2:#7ea4ff; --soft:#1c2740;
+    --ok:#34c98b; --ok-soft:#153327; --bad:#ff6b63; --bad-soft:#3a1d1c; --skip:#6f7a90;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI","Segoe UI Variable",Arial,sans-serif;font-size:15px;user-select:none;overflow:hidden}
+.app{height:100%;display:flex;flex-direction:column;padding:22px 24px 20px;gap:16px}
+
+header{display:flex;align-items:center;gap:14px}
+.logo{width:46px;height:46px;border-radius:14px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 6px 16px rgba(31,95,224,.35)}
+.logo svg{width:24px;height:24px}
+h1{margin:0;font-size:21px;font-weight:700;letter-spacing:.2px}
+.sub{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+
+.card{background:var(--card);border-radius:18px;box-shadow:var(--shadow)}
+
+/* אזור גרירה */
+#drop{flex:1;min-height:0;border:2px dashed var(--line);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;
+  transition:border-color .15s, background .15s, transform .15s}
+#drop.over{border-color:var(--accent);background:var(--soft);transform:scale(1.01)}
+.bigicon{width:78px;height:78px;border-radius:24px;background:var(--soft);display:grid;place-items:center}
+.bigicon svg{width:38px;height:38px;color:var(--accent)}
+#drop h2{margin:4px 0 0;font-size:20px;font-weight:650}
+#drop p{margin:0;color:var(--muted);line-height:1.6}
+.or{color:var(--muted);font-size:13px;display:flex;align-items:center;gap:10px;width:220px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+button{font:inherit;border:0;border-radius:12px;padding:10px 20px;cursor:pointer;font-weight:600;
+  display:inline-flex;align-items:center;gap:8px;transition:filter .12s, transform .08s, background .12s}
+button:active{transform:translateY(1px)}
+button svg{width:18px;height:18px}
+.primary{background:var(--accent);color:var(--accent-ink);box-shadow:0 4px 12px rgba(31,95,224,.3)}
+.primary:hover{filter:brightness(1.08)}
+.ghost{background:var(--soft);color:var(--accent)}
+.ghost:hover{filter:brightness(.97)}
+.danger{background:var(--bad-soft);color:var(--bad)}
+.fmt{font-size:12.5px;color:var(--muted);margin-top:4px}
+
+/* עבודה */
+#work{flex:1;min-height:0;display:none;flex-direction:column;overflow:hidden}
+.top{padding:18px 20px 14px;border-bottom:1px solid var(--line)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#title{font-size:17px;font-weight:700}
+#counts{color:var(--muted);font-size:13.5px;margin-top:3px}
+.bar{height:10px;background:var(--soft);border-radius:99px;overflow:hidden;margin-top:14px}
+.bar>i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .25s}
+#list{flex:1;overflow:auto;padding:8px 10px 10px}
+.item{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:12px}
+.item.active{background:var(--soft)}
+.st{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;
+  background:var(--soft);color:var(--muted)}
+.st svg{width:16px;height:16px}
+.item.done .st{background:var(--ok-soft);color:var(--ok)}
+.item.fail .st{background:var(--bad-soft);color:var(--bad)}
+.item.skip .st{color:var(--skip)}
+.meta{flex:1;min-width:0}
+.name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;font-size:14px}
+.path{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:12px;direction:rtl}
+.mini{height:4px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:6px;display:none}
+.item.active .mini{display:block}
+.mini>i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+.tag{font-size:12.5px;color:var(--muted);flex:none;min-width:56px;text-align:left}
+.item.done .tag{color:var(--ok)} .item.fail .tag{color:var(--bad)}
+.spin{width:16px;height:16px;border:2.5px solid var(--line);border-top-color:var(--accent);border-radius:50%;
+  animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.foot{padding:14px 20px;border-top:1px solid var(--line);display:none;gap:10px;flex-wrap:wrap}
+#work.finished .foot{display:flex}
+#work.finished #cancel{display:none}
+.banner{display:none;margin-top:12px;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5}
+#work.finished .banner{display:block}
+.banner.good{background:var(--ok-soft);color:var(--ok)}
+.banner.warn{background:var(--bad-soft);color:var(--bad)}
+
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
+  background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;font-size:14px;
+  transition:.2s;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%)}
+::-webkit-scrollbar{width:10px} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px;border:3px solid var(--card)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><rect x="8.5" y="5" width="7" height="6" rx="1" fill="#fff" stroke="none"/><path d="M9 15h.01M12 15h.01M15 15h.01M9 18h.01M12 18h.01M15 18h.01"/></svg></div>
+    <div>
+      <h1>ממיר לנוקיה</h1>
+      <p class="sub">הופך כל סרטון לקובץ שהטלפון מנגן, באותו מבנה תיקיות</p>
+    </div>
+  </header>
+
+  <section id="drop" class="card">
+    <div class="bigicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4m0 0 4 4m-4-4L8 8"/><path d="M4 14v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3"/></svg></div>
+    <h2>גרור לכאן תיקייה או סרטונים</h2>
+    <p>אפשר לגרור כמה תיקיות וקבצים יחד</p>
+    <div class="or">או</div>
+    <div class="btns">
+      <button class="primary" onclick="pick('folder')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>בחר תיקייה</button>
+      <button class="ghost" onclick="pick('files')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="m17 10 4-2v8l-4-2"/></svg>בחר סרטונים</button>
+    </div>
+    <div class="fmt">הסרטונים החדשים נשמרים בתיקייה "‎<שם> - נוקיה‎" ליד המקור. המקור לא משתנה.</div>
+  </section>
+
+  <section id="work" class="card">
+    <div class="top">
+      <div class="row">
+        <div>
+          <div id="title">ממיר…</div>
+          <div id="counts"></div>
+        </div>
+        <button id="cancel" class="danger" onclick="cancelRun()">עצור</button>
+      </div>
+      <div class="bar"><i id="total"></i></div>
+      <div id="banner" class="banner"></div>
+    </div>
+    <div id="list"></div>
+    <div class="foot">
+      <button class="primary" onclick="api().open_output()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>פתח את התיקייה</button>
+      <button class="ghost" onclick="reset()">המרה חדשה</button>
+    </div>
+  </section>
+</div>
+<div id="toast"></div>
+
+<script>
+const ICON = {
+  wait: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/></svg>',
+  done: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  fail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg>',
+  skip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 7 5 5-5 5M13 7l5 5-5 5"/></svg>',
+};
+const TAG = {wait:'ממתין', done:'הושלם', fail:'נכשל', skip:'קיים כבר'};
+const $ = s => document.querySelector(s);
+const api = () => window.pywebview.api;
+let busy = false;
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+async function pick(kind){
+  if (busy) return;
+  const r = await api().pick(kind);
+  if (r) toast(r);
+}
+function cancelRun(){ api().cancel(); $('#cancel').disabled = true; $('#cancel').textContent = 'עוצר…'; }
+function reset(){
+  busy = false;
+  $('#work').style.display = 'none'; $('#work').classList.remove('finished');
+  $('#drop').style.display = 'flex';
+}
+
+// גרירה: הדפדפן לא יפתח את הקובץ; Python מקבל את הנתיבים המלאים
+['dragenter','dragover'].forEach(ev => document.addEventListener(ev, e => {
+  e.preventDefault(); if (!busy) $('#drop').classList.add('over');
+}));
+['dragleave','drop'].forEach(ev => document.addEventListener(ev, e => {
+  e.preventDefault();
+  if (ev === 'drop' || !e.relatedTarget) $('#drop').classList.remove('over');
+}));
+
+// קריאות מ-Python
+window.onJobs = (jobs) => {
+  busy = true;
+  $('#drop').style.display = 'none';
+  const w = $('#work'); w.style.display = 'flex'; w.classList.remove('finished');
+  $('#cancel').disabled = false; $('#cancel').textContent = 'עצור';
+  $('#title').textContent = 'ממיר…';
+  $('#total').style.width = '0';
+  $('#counts').textContent = jobs.length + ' סרטונים';
+  const list = $('#list'); list.innerHTML = '';
+  for (const j of jobs){
+    const el = document.createElement('div');
+    el.className = 'item'; el.id = 'j' + j.id;
+    el.innerHTML = `<div class="st">${ICON.wait}</div>
+      <div class="meta"><div class="name"></div><div class="path"></div><div class="mini"><i></i></div></div>
+      <div class="tag">${TAG.wait}</div>`;
+    el.querySelector('.name').textContent = j.name;
+    el.querySelector('.path').textContent = j.rel;
+    list.appendChild(el);
+  }
+};
+window.onItem = (id, state, pct) => {
+  const el = document.getElementById('j' + id); if (!el) return;
+  if (state === 'run'){
+    if (!el.classList.contains('active')){
+      el.className = 'item active';
+      el.querySelector('.st').innerHTML = '<div class="spin"></div>';
+      el.scrollIntoView({block:'nearest', behavior:'smooth'});
+    }
+    el.querySelector('.mini>i').style.width = pct + '%';
+    el.querySelector('.tag').textContent = Math.floor(pct) + '%';
+  } else {
+    el.className = 'item ' + state;
+    el.querySelector('.st').innerHTML = ICON[state];
+    el.querySelector('.tag').textContent = TAG[state];
+  }
+};
+window.onTotal = (pct, text) => { $('#total').style.width = pct + '%'; $('#counts').textContent = text; };
+window.onDone = (title, banner, good) => {
+  $('#title').textContent = title;
+  const b = $('#banner'); b.textContent = banner; b.className = 'banner ' + (good ? 'good' : 'warn');
+  $('#work').classList.add('finished');
+};
+window.onToast = toast;
+</script>
+</body>
+</html>
