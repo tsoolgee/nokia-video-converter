@@ -37,6 +37,16 @@ header{display:flex;align-items:center;gap:14px}
 .logo{width:52px;height:52px;flex:none;border-radius:14px;background:#fff;display:grid;place-items:center;
   box-shadow:var(--shadow)}
 .logo img{width:44px;height:44px}
+.brand{display:flex;flex-direction:column;align-items:center;gap:5px;flex:none}
+.love{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.love b{color:#e0457b;font-weight:600}
+.upd{display:flex;gap:12px;align-items:flex-start}
+.upd .ic{width:44px;height:44px;border-radius:14px;background:var(--soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.upd .ic svg{width:24px;height:24px}
+#updNotes{white-space:pre-line;font-size:13.5px;color:var(--muted);line-height:1.6;margin-top:8px;max-height:180px;overflow:auto}
+#update{position:fixed;inset:0;background:var(--overlay);display:none;align-items:center;justify-content:center;padding:20px;z-index:7}
+#update.open{display:flex}
+#update .sheet{width:min(460px,100%)}
 .htext{flex:1;min-width:0}
 h1{margin:0;font-size:21px;font-weight:700}
 .sub{margin:2px 0 0;color:var(--muted);font-size:13.5px}
@@ -164,7 +174,10 @@ body.replace .fmt-copy{display:none}
 <body>
 <div class="app">
   <header>
-    <div class="logo"><img src="{{LOGO}}" alt=""></div>
+    <div class="brand">
+      <div class="logo"><img src="{{LOGO}}" alt=""></div>
+      <div class="love">נוצר באהבה לאבי <b>♥</b></div>
+    </div>
     <div class="htext">
       <h1>ממיר סרטונים לנוקיה</h1>
       <p class="sub">הופך כל סרטון לקובץ שהטלפון מנגן, באותו מבנה תיקיות</p>
@@ -247,7 +260,10 @@ body.replace .fmt-copy{display:none}
     </div>
     <div class="foot2">
       <span class="ver">גרסה {{VERSION}}</span>
-      <button class="primary" onclick="closeSettings()">סגור</button>
+      <div style="display:flex;gap:8px">
+        <button class="ghost" onclick="api().check_update(true)">בדוק עדכונים</button>
+        <button class="primary" onclick="closeSettings()">סגור</button>
+      </div>
     </div>
   </div>
 </div>
@@ -259,6 +275,22 @@ body.replace .fmt-copy{display:none}
     <div class="foot2">
       <button class="ghost" onclick="confirmReplace(false)">ביטול</button>
       <button class="danger" onclick="confirmReplace(true)">כן, להחליף</button>
+    </div>
+  </div>
+</div>
+<div id="update">
+  <div class="sheet card">
+    <div class="upd">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0 4-4m-4 4-4-4"/><path d="M4 17v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"/></svg></div>
+      <div style="flex:1;min-width:0">
+        <h3>יש גרסה חדשה!</h3>
+        <div style="color:var(--muted);margin-top:4px">גרסה <b id="updVer"></b> זמינה להורדה. הגרסה שלך: {{VERSION}}</div>
+        <div id="updNotes"></div>
+      </div>
+    </div>
+    <div class="foot2">
+      <button class="ghost" onclick="closeUpdate()">אחר כך</button>
+      <button class="primary" onclick="api().download_update(); closeUpdate()">הורד את הגרסה החדשה</button>
     </div>
   </div>
 </div>
@@ -378,6 +410,12 @@ window.onDone = (title, banner, good, pct) => {
   $('#work').classList.add('finished');
 };
 window.onToast = toast;
+window.onUpdate = (ver, notes) => {
+  $('#updVer').textContent = ver;
+  $('#updNotes').textContent = notes;
+  $('#update').classList.add('open');
+};
+function closeUpdate(){ $('#update').classList.remove('open'); }
 </script>
 </body>
 </html>

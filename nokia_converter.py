@@ -13,14 +13,17 @@ import subprocess
 import sys
 import threading
 import time
+import urllib.request
 import webbrowser
 from ctypes import wintypes
 
 import webview
 from webview.dom import DOMEventHandler
 
-VERSION = "1.1.0"
+VERSION = "0.0.1"
 SITE = "https://tsoolgee.uk"
+REPO = "tsoolgee/nokia-video-converter"
+DOWNLOAD_URL = f"https://github.com/{REPO}/releases/latest/download/NokiaConverter.exe"
 
 VIDEO_EXT = {
     ".mp4", ".m4v", ".mkv", ".webm", ".avi", ".mov", ".qt", ".wmv", ".asf", ".flv", ".f4v",
@@ -153,6 +156,19 @@ def already_nokia(info):
             and (re.search(r"Audio: aac", info) is not None or "Audio:" not in info))
 
 
+def ver_tuple(v):
+    return tuple(int(x) for x in re.findall(r"\d+", v)[:3])
+
+
+def latest_release():
+    """מחזיר (גרסה, הערות) של הגרסה האחרונה בגיטהאב, או None אם אין חיבור."""
+    req = urllib.request.Request(f"https://api.github.com/repos/{REPO}/releases/latest",
+                                 headers={"User-Agent": "NokiaConverter", "Accept": "application/vnd.github+json"})
+    with urllib.request.urlopen(req, timeout=10) as r:
+        data = json.load(r)
+    return data.get("tag_name", "").lstrip("v"), data.get("body") or ""
+
+
 # --- סל מחזור (ולא מחיקה סופית) ---
 class SHFILEOPSTRUCTW(ctypes.Structure):
     _fields_ = [("hwnd", wintypes.HWND), ("wFunc", wintypes.UINT),
@@ -214,6 +230,24 @@ class Api:
 
     def open_site(self):
         webbrowser.open(SITE)
+
+    def download_update(self):
+        webbrowser.open(DOWNLOAD_URL)
+
+    def check_update(self, manual=False):
+        threading.Thread(target=self._check_update, args=(manual,), daemon=True).start()
+
+    def _check_update(self, manual):
+        try:
+            latest, notes = latest_release()
+        except Exception:
+            if manual:
+                self._js("onToast", "אין חיבור לבדיקת עדכונים")
+            return
+        if latest and ver_tuple(latest) > ver_tuple(VERSION):
+            self._js("onUpdate", latest, notes)
+        elif manual:
+            self._js("onToast", "יש לך את הגרסה האחרונה")
 
     def pick(self, kind):
         if self._busy:
@@ -388,6 +422,7 @@ def main():
         args = [a for a in sys.argv[1:] if os.path.exists(a)]
         if args:
             api._start(args)
+        api.check_update()
 
     window.events.loaded += on_loaded
     window.events.closing += api.cancel
